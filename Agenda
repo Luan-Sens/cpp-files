@@ -1,0 +1,217 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct usuario{ string nome; string senha; int funcao;};
+struct evento{int cod; string hora; string data; string descrisao;};
+
+vector<usuario> contas;
+vector<usuario>:: iterator it;
+vector<evento>eventos;
+vector<evento>::iterator iteve;
+
+void criar_evento(){
+
+    evento e;
+
+    cout<<"De uma descricao para o evento: ";
+    cin>>e.descrisao;
+    cout<<"De uma data para o evento: ";
+    cin>>e.data;
+    cout<<"De uma hora para o evento: ";
+    cin>>e.hora;
+    cout<<"De um codigo para o evento: ";
+    cin>>e.cod;
+
+    eventos.push_back(e);
+    cout<<"Evento criado com sucesso"<<endl;
+
+
+}
+
+void consultar(){
+
+    cout<<"____________Lista de eventos____________\n";
+    for(iteve=eventos.begin();iteve!=eventos.end();++iteve){
+        cout<<"Descrisao: "<<iteve->descrisao<<endl;
+        cout<<"Data     : "<<iteve->data<<endl;
+        cout<<"Hora     : "<<iteve->hora<<endl;
+        cout<<"Codigo   : "<<iteve->cod<<endl;
+        cout<<"_________________________________"<<endl;
+
+    }
+
+}
+
+bool excluir_evento(){
+
+    int codigo;
+    cout<<"Digite o codigo do evento que deseja excluir: ";
+    cin>>codigo;
+    for(iteve=eventos.begin();iteve!=eventos.end();++iteve){
+        if(iteve->cod == codigo){
+            eventos.erase(iteve);
+            cout<<"Evento excluido com sucesso;"<<endl;
+            return true;
+        }
+
+    }
+    excluir_evento();
+
+}
+
+bool valida(usuario a){
+    bool flag{false};
+    for(it=contas.begin();it!=contas.end();++it){
+        if(it->nome == a.nome){
+            flag=true;
+        }
+    }
+    if(flag){
+        flag = false;
+        for(it=contas.begin();it!=contas.end();++it){
+            if(it->senha == a.senha){
+                flag=true;
+            }
+        }
+
+    } return flag;
+}
+
+int login()
+{
+
+    cout<<"_________LOGIN_________"<<endl;
+    usuario acess;
+    cout<<"Digite o nome de usuario: ";
+    cin>>acess.nome;
+    cout<<"Digite a senha: ";
+    cin>>acess.senha;
+
+    while(!valida(acess)){
+        cout<<"Dados incorretos"<<endl;
+        cout<<"Digite o nome de usuario: ";
+        cin>>acess.nome;
+        cout<<"Digite a senha: ";
+        cin>>acess.senha;
+        valida(acess);
+    }
+    cout<<"Digite sua funcao:"<<endl;
+    cout<<" 1 para secretario, ou 2 para operador: \n";
+    cin>>acess.funcao;
+    while(acess.funcao > 2 || acess.funcao < 1){
+        cout<<"Funcao invalida\n";
+        cout<<"Digite sua funcao:"<<endl;
+        cout<<"1 para secretario, ou 2 para operador: ";
+        cin>>acess.funcao;
+    }
+    return acess.funcao;
+
+}
+
+
+
+
+bool criar_usuario(){
+    usuario b;
+    int deci;
+    cout<<"Digite um nome de usuario: ";
+    cin>>b.nome;
+    cout<<"Digite uma senha: ";
+    cin>>b.senha;
+    cout<<"Digite sua funcao:";
+    cout<<" 1 para secretario, ou 2 para operador: \n";
+    cin>>b.funcao;
+
+    cout<<"Digite 1 para cadastrar e fazer login"<<endl;
+    cout<<"2 para cancelar e voltar a tela de login"<<endl;
+    cin>>deci;
+    if(deci== 1 ){
+        contas.push_back(b);
+        return true;
+    }if(deci == 2)
+        return false;
+}
+
+
+
+bool excluir_usuario(){
+     usuario a;
+     cout<<"Digite o nome de usuario que deseja excluir e a senha"<<endl;
+     cout<<"Digite 2 para cancelar:\n";
+     cout<<"Nome: ";
+     cin>>a.nome;
+     if(a.nome=="2")login();
+     cout<<"Senha: ";
+     cin>>a.senha;
+     if(valida(a)){
+        for(it=contas.begin();it!=contas.end();++it){
+            if(it->nome == a.nome){
+            contas.erase(it);
+            cout<<"Usuario excluido com sucesso\n";
+            return true;
+            }
+        }
+
+     }else{
+        cout<<"Usuario nao encontrado"<<endl;
+        excluir_usuario();
+     }
+}
+
+int main(){
+    usuario a{"admin","admin",2}; contas.push_back(a);
+
+    if(login()==2){
+        int menu;
+
+        cout<<"_________MENU_________"<<endl;
+        cout<<"Digite 1 para criar usuario"<<endl;
+        cout<<"Digite 2 para excluir usuario"<<endl;
+        cout<<"Digite 3 para consultar evento"<<endl;
+        cout<<"Digite 4 para criar evento"<<endl;
+        cout<<"Digite 5 para excluir evento"<<endl;
+        cin>>menu;
+        switch(menu){
+
+            case 1:
+                if(criar_usuario()==true){
+                    cout<<"Usuario criado com sucesso."<<endl;
+
+                    return main();
+
+                }else
+                    return main();
+
+            case 2:
+                excluir_usuario();
+
+                return main();
+
+            case 3:
+                consultar();
+
+                return main();
+
+            case 4:
+                criar_evento();
+                return main();
+
+            case 5:
+                excluir_evento();
+                return main();
+
+        }
+    }else{
+        int esc;
+        cout<<"digite 1 para consultar os eventos ou 2 para sair: ";
+        cin>>esc;
+        if(esc=1){
+            consultar();
+            return main();
+        }else
+            return 1;
+
+    }
+}
+
